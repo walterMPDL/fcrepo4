@@ -78,6 +78,7 @@ import org.fcrepo.services.LowLevelStorageService;
 import org.fcrepo.services.functions.GetClusterConfiguration;
 import org.modeshape.jcr.api.JcrConstants;
 import org.modeshape.jcr.api.NamespaceRegistry;
+import org.modeshape.jcr.api.Namespaced;
 import org.slf4j.Logger;
 
 import com.codahale.metrics.Counter;
@@ -506,21 +507,25 @@ public class JcrRdfTools {
     public Model getJcrPropertiesModel(final NodeType nodeType) throws RepositoryException {
         final Model model = getJcrPropertiesModel();
 
-        final Resource nodeTypeResource = model.createResource("#" + nodeType.getName());
+        final Resource nodeTypeResource = getResource(nodeType);
 
         model.add(nodeTypeResource, RDF.type, RDFS.Class);
-        model.add(nodeTypeResource, RDFS.isDefinedBy, graphSubjects.getGraphSubject(session, "/"));
+        final Resource rootSubject = graphSubjects.getGraphSubject(session, "/");
+        model.add(nodeTypeResource, RDFS.isDefinedBy, rootSubject);
         model.add(nodeTypeResource, RDFS.label, nodeType.getName());
 
         for (NodeType type : nodeType.getDeclaredSupertypes()) {
-            model.add(nodeTypeResource, RDFS.subClassOf, model.createResource("#" + type.getName()));
+
+            final Resource superTypeResource = getResource(type);
+
+            model.add(nodeTypeResource, RDFS.subClassOf, superTypeResource);
         }
 
         for (NodeDefinition nodeDefinition : nodeType.getDeclaredChildNodeDefinitions()) {
-            final Resource propertyDefinitionResource = model.createResource("#" + nodeType.getName() + "-" + nodeDefinition.getName());
+            final Resource propertyDefinitionResource = getResource(nodeDefinition);
             model.add(propertyDefinitionResource, RDF.type, RDF.Property);
             model.add(propertyDefinitionResource, RDFS.domain, nodeTypeResource);
-            model.add(propertyDefinitionResource, RDFS.isDefinedBy, graphSubjects.getGraphSubject(session, "/"));
+            model.add(propertyDefinitionResource, RDFS.isDefinedBy, rootSubject);
             model.add(propertyDefinitionResource, RDFS.label, nodeDefinition.getName());
 
             final NodeType[] requiredPrimaryTypes = nodeDefinition.getRequiredPrimaryTypes();
@@ -530,7 +535,7 @@ public class JcrRdfTools {
                     // no-op
                     break;
                 case 1:
-                    model.add(propertyDefinitionResource, RDFS.range, model.createResource("#" + requiredPrimaryTypes[0].getName()));
+                    model.add(propertyDefinitionResource, RDFS.range, getResource(requiredPrimaryTypes[0]));
                     break;
                 default:
                     final Resource resource = model.createResource();
@@ -540,7 +545,7 @@ public class JcrRdfTools {
                     model.add(resource, RDF.type, OWL.Class);
 
                     for (NodeType requiredPrimaryType : requiredPrimaryTypes) {
-                        model.add(resource, OWL.unionOf, model.createResource("#" + requiredPrimaryType.getName()));
+                        model.add(resource, OWL.unionOf, getResource(requiredPrimaryType));
                     }
 
 
@@ -552,10 +557,10 @@ public class JcrRdfTools {
 
         for (PropertyDefinition propertyDefinition : nodeType.getDeclaredPropertyDefinitions()) {
 
-            final Resource propertyDefinitionResource = model.createResource("#" + nodeType.getName() + "-" + propertyDefinition.getName());
+            final Resource propertyDefinitionResource = getResource(propertyDefinition)
             model.add(propertyDefinitionResource, RDF.type, RDF.Property);
             model.add(propertyDefinitionResource, RDFS.domain, nodeTypeResource);
-            model.add(propertyDefinitionResource, RDFS.isDefinedBy, graphSubjects.getGraphSubject(session, "/"));
+            model.add(propertyDefinitionResource, RDFS.isDefinedBy, rootSubject);
             model.add(propertyDefinitionResource, RDFS.label, propertyDefinition.getName());
 
             final int requiredType = propertyDefinition.getRequiredType();
@@ -593,6 +598,14 @@ public class JcrRdfTools {
 
     }
 
+    private Resource getResource(Namespaced ns) throws RepositoryException {
+        if (ns.getNamespaceURI().equals("info:fedora/")) {
+            return graphSubjects.getGraphSubject(session, "/fcr:nodeTypes/" + ns.getLocalName());
+        } else {
+            return ResourceFactory.createProperty(ns.getNamespaceURI(), ns.getLocalName()).asResource();
+        }
+    }
+
     /**
      * Add all of a node's properties to the given model
      *
@@ -610,6 +623,10 @@ public class JcrRdfTools {
             final Property property = properties.nextProperty();
 
             addPropertyToModel(subject, model, property);
+        }
+
+        for (NodeType nodeType : node.getMixinNodeTypes()) {
+            model.add(subject, RDF.type, getResource(nodeType));
         }
 
         // always include the jcr:content node information
