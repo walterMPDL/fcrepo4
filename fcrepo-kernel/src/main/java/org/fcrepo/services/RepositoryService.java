@@ -29,6 +29,8 @@ import static org.fcrepo.utils.FedoraTypesUtils.getRepositoryCount;
 import static org.fcrepo.utils.NamespaceTools.getNamespaceRegistry;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -275,5 +277,22 @@ public class RepositoryService extends JcrTools implements FedoraJcrTypes {
      */
     public void setRepository(final Repository repository) {
         repo = repository;
+    }
+
+    public Dataset getNodeTypes(final Session session, final GraphSubjects subjects) throws RepositoryException {
+        final JcrRdfTools jcrRdfTools = JcrRdfTools.withContext(subjects, session);
+        return DatasetFactory.create(jcrRdfTools.getJcrPropertiesModel(session.getWorkspace().getNodeTypeManager()));
+    }
+
+    public Dataset registerNodeTypes(final Session session, final GraphSubjects subjects, final InputStream cndStream) throws RepositoryException, IOException {
+        final NodeTypeManager nodeTypeManager = (NodeTypeManager) session.getWorkspace().getNodeTypeManager();
+        final NodeTypeIterator nodeTypeIterator = nodeTypeManager.registerNodeTypes(cndStream, true);
+        final JcrRdfTools jcrRdfTools = JcrRdfTools.withContext(subjects, session);
+
+        final Model model = jcrRdfTools.getJcrPropertiesModel(nodeTypeIterator);
+
+        final Dataset dataset = DatasetFactory.create(model);
+
+        return dataset;
     }
 }

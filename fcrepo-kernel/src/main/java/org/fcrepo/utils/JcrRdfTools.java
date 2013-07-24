@@ -482,20 +482,26 @@ public class JcrRdfTools {
 
         final NodeTypeIterator primaryNodeTypes = nodeTypeManager.getPrimaryNodeTypes();
 
-        while (primaryNodeTypes.hasNext()) {
-            NodeType t = primaryNodeTypes.nextNodeType();
-            model = model.union(getJcrPropertiesModel(t));
-        }
+        model = model.union(getJcrPropertiesModel(primaryNodeTypes));
 
         final NodeTypeIterator mixinNodeTypes = nodeTypeManager.getMixinNodeTypes();
 
-        while (mixinNodeTypes.hasNext()) {
-            NodeType t = mixinNodeTypes.nextNodeType();
+        model = model.union(getJcrPropertiesModel(mixinNodeTypes));
+
+        return model;
+
+    }
+
+
+    public Model getJcrPropertiesModel(NodeTypeIterator nodeTypeIterator) throws RepositoryException {
+        Model model = getJcrPropertiesModel();
+
+        while (nodeTypeIterator.hasNext()) {
+            NodeType t = nodeTypeIterator.nextNodeType();
             model = model.union(getJcrPropertiesModel(t));
         }
 
         return model;
-
     }
 
     /**
