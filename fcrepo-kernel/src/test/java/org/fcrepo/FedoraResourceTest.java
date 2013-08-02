@@ -48,7 +48,6 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.fcrepo.rdf.GraphSubjects;
 import org.fcrepo.rdf.impl.DefaultGraphSubjects;
@@ -65,6 +64,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.util.Symbol;
 

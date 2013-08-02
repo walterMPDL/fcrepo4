@@ -50,7 +50,7 @@ public class TiffPolicyStorageIT {
 
     protected Logger logger;
 
-    static private Repository repo;
+    private Repository repo;
 
     private DatastreamService datastreamService;
 
@@ -113,7 +113,7 @@ public class TiffPolicyStorageIT {
 
         final Node node = session.getNode("/testCompositeObject/content");
 
-        BinaryKey key =
+        final BinaryKey key =
             getBinaryKey.apply(node.getNode(JcrConstants.JCR_CONTENT)
                                .getProperty(JcrConstants.JCR_DATA));
 
@@ -122,7 +122,7 @@ public class TiffPolicyStorageIT {
         final Node tiffNode =
             session.getNode("/testCompositeObject/tiffContent");
 
-        BinaryKey tiffKey =
+        final BinaryKey tiffKey =
             getBinaryKey.apply(tiffNode.getNode(JcrConstants.JCR_CONTENT)
                                .getProperty(JcrConstants.JCR_DATA));
 
@@ -144,12 +144,12 @@ public class TiffPolicyStorageIT {
 
         assertEquals(1, lowLevelTiffEntries.size());
 
-        LowLevelCacheEntry e = iterator.next();
+        final LowLevelCacheEntry e = iterator.next();
 
         assertThat(e.getExternalIdentifier(),
                    containsString("TransientBinaryStore"));
 
-        LowLevelCacheEntry tiffEntry = tiffIterator.next();
+        final LowLevelCacheEntry tiffEntry = tiffIterator.next();
         assertThat(tiffEntry.getExternalIdentifier(),
                    containsString("FileSystemBinaryStore"));
     }

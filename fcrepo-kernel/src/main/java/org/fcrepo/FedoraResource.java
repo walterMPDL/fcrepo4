@@ -32,8 +32,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.version.VersionHistory;
 
-import com.hp.hpl.jena.update.UpdateFactory;
-import com.hp.hpl.jena.update.UpdateRequest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.fcrepo.rdf.GraphProperties;
 import org.fcrepo.rdf.GraphSubjects;
@@ -49,6 +47,8 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.DatasetFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.update.UpdateAction;
+import com.hp.hpl.jena.update.UpdateFactory;
+import com.hp.hpl.jena.update.UpdateRequest;
 
 /**
  * Common behaviors across FedoraObject and Datastream types; also used

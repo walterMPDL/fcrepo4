@@ -60,10 +60,12 @@ import org.slf4j.Logger;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 
+import javax.annotation.Nonnull;
+
 /**
  * Convenience class with static methods for manipulating Fedora types in the
  * JCR.
- * 
+ *
  * @author ajs6f
  * @date Feb 14, 2013
  */
@@ -130,7 +132,7 @@ public abstract class FedoraTypesUtils {
             new Function<NodeType, String>() {
 
                 @Override
-                public String apply(final NodeType t) {
+                public String apply(@Nonnull final NodeType t) {
                     checkArgument(t != null, "null has no name!");
                     return t.getName();
                 }
@@ -143,10 +145,10 @@ public abstract class FedoraTypesUtils {
             new Function<Value, String>() {
 
                 @Override
-                public String apply(final Value v) {
+                public String apply(@Nonnull final Value v) {
+                    checkArgument(v != null, "null has no appropriate "
+                            + "String representation!");
                     try {
-                        checkArgument(v != null, "null has no appropriate "
-                                + "String representation!");
                         return v.getString();
                     } catch (final RepositoryException e) {
                         throw propagate(e);
@@ -161,7 +163,7 @@ public abstract class FedoraTypesUtils {
             new Predicate<Property>() {
 
                 @Override
-                public boolean apply(final Property p) {
+                public boolean apply(@Nonnull final Property p) {
                     checkArgument(p != null,
                             "null is neither multiple or not multiple!");
                     try {
@@ -179,7 +181,7 @@ public abstract class FedoraTypesUtils {
     public static Predicate<Node> isInternalNode = new Predicate<Node>() {
 
         @Override
-        public boolean apply(final Node n) {
+        public boolean apply(@Nonnull final Node n) {
             checkArgument(n != null,
                     "null is neither multiple or not multiple!");
             try {
@@ -199,10 +201,10 @@ public abstract class FedoraTypesUtils {
             new Function<Node, ValueFactory>() {
 
                 @Override
-                public ValueFactory apply(final Node n) {
+                public ValueFactory apply(@Nonnull final Node n) {
+                    checkArgument(n != null,
+                            "null has no ValueFactory associated with it!");
                     try {
-                        checkArgument(n != null,
-                                "null has no ValueFactory associated with it!");
                         return n.getSession().getValueFactory();
                     } catch (final RepositoryException e) {
                         throw propagate(e);
@@ -247,17 +249,17 @@ public abstract class FedoraTypesUtils {
 
     /**
      * Creates a JCR {@link Binary}
-     * 
+     *
      * @param n a {@link Node}
      * @param i an {@link InputStream}
      * @return a JCR {@link Binary}
      */
-    public static Binary getBinary(final Node n, final InputStream i) {
+    public static Binary getBinary(@Nonnull final Node n, final InputStream i) {
+        checkArgument(n != null,
+                "null cannot have a Binary created for it!");
+        checkArgument(i != null,
+                "null cannot have a Binary created from it!");
         try {
-            checkArgument(n != null,
-                    "null cannot have a Binary created for it!");
-            checkArgument(i != null,
-                    "null cannot have a Binary created from it!");
             return n.getSession().getValueFactory().createBinary(i);
         } catch (final RepositoryException e) {
             throw propagate(e);
@@ -266,18 +268,18 @@ public abstract class FedoraTypesUtils {
 
     /**
      * Creates a JCR {@link Binary}
-     * 
+     *
      * @param n a {@link Node}
      * @param i an {@link InputStream}
      * @return a JCR {@link Binary}
      */
-    public static Binary getBinary(final Node n, final InputStream i,
+    public static Binary getBinary(@Nonnull final Node n, final InputStream i,
             final String hint) {
+        checkArgument(n != null,
+                "null cannot have a Binary created for it!");
+        checkArgument(i != null,
+                "null cannot have a Binary created from it!");
         try {
-            checkArgument(n != null,
-                    "null cannot have a Binary created for it!");
-            checkArgument(i != null,
-                    "null cannot have a Binary created from it!");
             final JcrValueFactory jcrValueFactory =
                     ((JcrValueFactory) n.getSession().getValueFactory());
             return jcrValueFactory.createBinary(i, hint);
@@ -288,7 +290,7 @@ public abstract class FedoraTypesUtils {
 
     /**
      * Get the JCR Node Type manager
-     * 
+     *
      * @param node
      * @return
      * @throws RepositoryException
@@ -301,7 +303,7 @@ public abstract class FedoraTypesUtils {
     /**
      * Get the property definition information (containing type and multi-value
      * information)
-     * 
+     *
      * @param node the node to use for inferring the property definition
      * @param propertyName the property name to retrieve a definition for
      * @return a JCR PropertyDefinition, if available, or null
@@ -325,7 +327,7 @@ public abstract class FedoraTypesUtils {
     /**
      * Convenience method for transforming arrays into {@link Collection}s
      * through a mapping {@link Function}.
-     * 
+     *
      * @param input A Collection<F>.
      * @param f A Function<F,T>.
      * @return An ImmutableSet copy of input after transformation by f
@@ -347,7 +349,7 @@ public abstract class FedoraTypesUtils {
 
     /**
      * Get the JCR Base version for a node
-     * 
+     *
      * @param node
      * @return
      * @throws RepositoryException
@@ -360,7 +362,7 @@ public abstract class FedoraTypesUtils {
 
     /**
      * Get the JCR VersionHistory for an existing node
-     * 
+     *
      * @param node
      * @return
      * @throws RepositoryException
@@ -373,7 +375,7 @@ public abstract class FedoraTypesUtils {
 
     /**
      * Get the JCR VersionHistory for a node at a given JCR path
-     * 
+     *
      * @param session
      * @param path
      * @return

@@ -60,7 +60,7 @@ public class SelfHealingIT {
 
     protected Logger logger;
 
-    static private Repository repo;
+    private Repository repo;
 
     private DatastreamService datastreamService;
 
@@ -107,7 +107,7 @@ public class SelfHealingIT {
         CacheStore store = ((CacheStoreEntry)entryToTamper).getLowLevelStore();
         if (store instanceof ChainingCacheStore) {
             store = ((ChainingCacheStore)store).getStores().keySet().iterator().next();
-            OutputStream outputStream =
+            final OutputStream outputStream =
                     new StoreChunkOutputStream(store, entryToTamper.getKey().toString() +
                             "-data");
             IOUtils.copy(new ByteArrayInputStream("qwerty".getBytes()), outputStream);

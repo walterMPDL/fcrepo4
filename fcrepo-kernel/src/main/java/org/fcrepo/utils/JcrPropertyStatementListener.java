@@ -28,7 +28,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
-import com.hp.hpl.jena.vocabulary.RDF;
 import org.fcrepo.RdfLexicon;
 import org.fcrepo.rdf.GraphSubjects;
 import org.slf4j.Logger;
@@ -37,6 +36,7 @@ import com.hp.hpl.jena.rdf.listeners.StatementListener;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * Listen to Jena statement events, and when the statement is changed in the
@@ -63,14 +63,14 @@ public class JcrPropertyStatementListener extends StatementListener {
      * @throws RepositoryException
      */
     public static JcrPropertyStatementListener getListener(
-            final GraphSubjects subjects, final Session session, Model problemModel)
+            final GraphSubjects subjects, final Session session, final Model problemModel)
         throws RepositoryException {
         return new JcrPropertyStatementListener(subjects, session, problemModel);
     }
 
     /**
      * Construct a statement listener within the given session
-     * 
+     *
      * @param subjects
      * @param session
      * @throws RepositoryException
@@ -85,7 +85,7 @@ public class JcrPropertyStatementListener extends StatementListener {
 
     /**
      * When a statement is added to the graph, serialize it to a JCR property
-     * 
+     *
      * @param s
      */
     @Override
@@ -154,7 +154,7 @@ public class JcrPropertyStatementListener extends StatementListener {
 
     /**
      * When a statement is removed, remove it from the JCR properties
-     * 
+     *
      * @param s
      */
     @Override
@@ -233,14 +233,11 @@ public class JcrPropertyStatementListener extends StatementListener {
     /**
      * Get a list of any problems from trying to apply the statement changes to
      * the node's properties
-     * 
+     *
      * @return
      */
     public Model getProblems() {
         return problems;
     }
 
-    private Session getSession() {
-        return this.session;
-    }
 }

@@ -18,6 +18,7 @@ package org.fcrepo.services;
 
 import static java.lang.System.currentTimeMillis;
 import static org.fcrepo.Transaction.State.NEW;
+import static org.fcrepo.services.TransactionService.FCREPO4_TX_ID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -119,7 +120,7 @@ public class TransactionServiceTest {
 
     @Test(expected = TransactionMissingException.class)
     public void testGetTxForNonTxSession() throws RepositoryException {
-        when(mockSession.getNamespaceURI(TransactionService.FCREPO4_TX_ID)).thenThrow(new NamespaceException(""));
+        when(mockSession.getNamespaceURI(FCREPO4_TX_ID)).thenThrow(new NamespaceException(""));
         service.getTransaction(mockSession);
     }
 

@@ -17,11 +17,11 @@ package org.fcrepo.integration;
 
 import static com.hp.hpl.jena.graph.NodeFactory.createLiteral;
 import static com.hp.hpl.jena.graph.NodeFactory.createURI;
-import static junit.framework.Assert.assertNotNull;
 import static org.fcrepo.utils.FedoraTypesUtils.getVersionHistory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -30,14 +30,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.jcr.LoginException;
 import javax.jcr.PropertyType;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.vocabulary.RDF;
 import org.fcrepo.FedoraResource;
 import org.fcrepo.RdfLexicon;
 import org.fcrepo.exception.InvalidChecksumException;
@@ -45,8 +42,6 @@ import org.fcrepo.rdf.impl.DefaultGraphSubjects;
 import org.fcrepo.services.DatastreamService;
 import org.fcrepo.services.NodeService;
 import org.fcrepo.services.ObjectService;
-import org.fcrepo.utils.FedoraJcrTypes;
-import org.fcrepo.utils.JcrRdfTools;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +56,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.core.DatasetGraph;
 import com.hp.hpl.jena.sparql.util.Symbol;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 @ContextConfiguration({"/spring-test/repo.xml"})
 public class FedoraResourceIT extends AbstractIT {
@@ -92,7 +88,7 @@ public class FedoraResourceIT extends AbstractIT {
 
     @Test
     public void testGetRootNode() throws IOException, RepositoryException {
-        Session session = repo.login();
+        final Session session = repo.login();
         final FedoraResource object = nodeService.getObject(session, "/");
         assertEquals("/", object.getPath());
         session.logout();
@@ -104,11 +100,11 @@ public class FedoraResourceIT extends AbstractIT {
                 nodeService.findOrCreateObject(session, "/testNodeGraph");
 
         logger.warn(object.getPropertiesDataset(new DefaultGraphSubjects(session)).toString());
-        Node s = createURI("info:fedora/testNodeGraph");
-        Node p =
+        final Node s = createURI("info:fedora/testNodeGraph");
+        final Node p =
                 createURI("info:fedora/fedora-system:def/internal"
                         + "#primaryType");
-        Node o = createLiteral("nt:unstructured");
+        final Node o = createLiteral("nt:unstructured");
         assertTrue(object.getPropertiesDataset(subjects).asDatasetGraph().contains(
                 Node.ANY, s, p, o));
     }
@@ -120,7 +116,7 @@ public class FedoraResourceIT extends AbstractIT {
         final FedoraResource object = nodeService.getObject(session, "/");
 
         logger.warn(object.getPropertiesDataset(subjects).toString());
-        Node s = createURI("info:fedora/");
+        final Node s = createURI("info:fedora/");
         Node p =
                 createURI("info:fedora/fedora-system:def/internal"
                         + "#primaryType");
@@ -153,7 +149,7 @@ public class FedoraResourceIT extends AbstractIT {
         logger.warn(object.getPropertiesDataset(subjects).toString());
 
         // jcr property
-        Node s = createURI("info:fedora/testObjectGraph");
+        final Node s = createURI("info:fedora/testObjectGraph");
         Node p = createURI("info:fedora/fedora-system:def/internal#uuid");
         Node o = createLiteral(object.getNode().getIdentifier());
         assertTrue(object.getPropertiesDataset(subjects).asDatasetGraph().contains(
@@ -214,7 +210,7 @@ public class FedoraResourceIT extends AbstractIT {
         p =
                 createURI("info:fedora/fedora-system:def/internal"
                         + "#numberOfChildren");
-        RDFDatatype long_datatype =
+        final RDFDatatype long_datatype =
                 ResourceFactory.createTypedLiteral(0L).getDatatype();
         o = createLiteral("0", long_datatype);
 
@@ -306,8 +302,8 @@ public class FedoraResourceIT extends AbstractIT {
                 + "<info:fcrepo/zyx> \"a\" } WHERE {} ");
 
         // jcr property
-        Node s = createURI("info:fedora/testObjectGraphUpdates");
-        Node p = createURI("info:fcrepo/zyx");
+        final Node s = createURI("info:fedora/testObjectGraphUpdates");
+        final Node p = createURI("info:fcrepo/zyx");
         Node o = createLiteral("a");
         assertTrue(object.getPropertiesDataset(subjects).asDatasetGraph().contains(
                 Node.ANY, s, p, o));
@@ -373,7 +369,7 @@ public class FedoraResourceIT extends AbstractIT {
                 graphStore.asDatasetGraph().getDefaultGraph().find(
                         Triple.createMatch(s, p, Node.ANY));
 
-        List<Triple> list = triples.toList();
+        final List<Triple> list = triples.toList();
         assertEquals(1, list.size());
 
         // make sure it matches the label
@@ -381,7 +377,7 @@ public class FedoraResourceIT extends AbstractIT {
         p =
                 createURI("info:fedora/fedora-system:def/internal"
                         + "#hasVersionLabel");
-        Node o = createLiteral("v0.0.1");
+        final Node o = createLiteral("v0.0.1");
 
         assertTrue(graphStore.asDatasetGraph().contains(Node.ANY, s, p, o));
 
