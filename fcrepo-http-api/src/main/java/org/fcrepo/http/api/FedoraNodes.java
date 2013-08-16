@@ -136,6 +136,7 @@ public class FedoraNodes extends AbstractResource {
             @Context HttpServletResponse servletResponse,
             @Context final UriInfo uriInfo) throws RepositoryException, IOException {
         final String path = toPath(pathList);
+        final String test;
         logger.trace("Getting profile for {}", path);
 
         try {
